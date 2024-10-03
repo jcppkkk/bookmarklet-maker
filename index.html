@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bookmarklet Maker</title>
     <style>
         html {
@@ -52,9 +54,34 @@
             let codeOutput = document.getElementById("output-textarea");
             codeOutput.value = output;
 
-            let htmlOuput = document.getElementById("htmlOuput-textarea");
-            htmlOuput.value = `<a href="${output}">${title}</a>`;
+            let htmlOutput = document.getElementById("htmlOuput-textarea");
+            htmlOutput.value = `<a href="${output}">${title}</a>`;
         }
+
+        function sharePage() {
+            const code = document.getElementById("code-textarea").value.trim();
+            const base64Code = btoa(code); // Encode the code to Base64
+            const shareUrl = `${window.location.origin}${window.location.pathname}?code=${base64Code}`;
+            
+            // Optionally, you can use the Clipboard API to copy the URL
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                alert('Shareable link copied to clipboard:\n' + shareUrl);
+            }).catch(err => {
+                console.error('Could not copy text: ', err);
+            });
+        }
+
+        function loadCodeFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const codeParam = urlParams.get('code');
+            if (codeParam) {
+                const decodedCode = atob(codeParam); // Decode the Base64 code
+                document.getElementById("code-textarea").value = decodedCode; // Populate the textarea
+            }
+        }
+
+        // Load code from URL on page load
+        window.onload = loadCodeFromUrl;
     </script>
 </head>
 
@@ -62,25 +89,23 @@
     <h2>Bookmarklet Maker</h2>
 
     Title: <input id="title-input" value="bookmarklet"></input>
-    </br>
+    <br>
     
-    Code: </br>
-
+    Code: <br>
     <textarea id="code-textarea" autofocus>alert('hello world');</textarea>
     <div align="center" style="display: flex; justify-content: space-evenly;">
         <button onclick="generateBookmarklet();">Generate Bookmarklet</button>
         <a id="bookmarklet" href="">bookmarklet</a>
+        <button onclick="sharePage();">Share Page</button>
     </div>
     
     Output:
-    </br>
+    <br>
     <textarea id="output-textarea" class="output-textarea"></textarea>
-    </br>
-
+    <br>
 
     Html code:
-    </br>
+    <br>
     <textarea id="htmlOuput-textarea" class="output-textarea"></textarea>
-    
 </body>
 </html>
