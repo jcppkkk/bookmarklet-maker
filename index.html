@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bookmarklet Maker</title>
+    <script language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
     <style>
         html {
             font-size: 18px;
@@ -60,8 +61,8 @@
 
         function sharePage() {
             const code = document.getElementById("code-textarea").value.trim();
-            const base64Code = btoa(code); // Encode the code to Base64
-            const shareUrl = `${window.location.origin}${window.location.pathname}?code=${base64Code}`;
+            const compressedCode = LZString.compressToBase64(code);
+            const shareUrl = `${window.location.origin}${window.location.pathname}?code=${compressedCode}`;
             
             // Optionally, you can use the Clipboard API to copy the URL
             navigator.clipboard.writeText(shareUrl).then(() => {
@@ -75,8 +76,8 @@
             const urlParams = new URLSearchParams(window.location.search);
             const codeParam = urlParams.get('code');
             if (codeParam) {
-                const decodedCode = atob(codeParam); // Decode the Base64 code
-                document.getElementById("code-textarea").value = decodedCode; // Populate the textarea
+                const decodedCode = LZString.decompressFromBase64(codeParam);
+                document.getElementById("code-textarea").value = decodedCode;
             }
         }
 
